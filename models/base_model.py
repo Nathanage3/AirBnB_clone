@@ -1,15 +1,26 @@
 #!/usr/bin/python
+''' BaseModel for all classes'''
+
 from uuid import uuid4
 from datetime import datetime
-''' BaseModel for all classes'''
 
 class BaseModel():
     '''Defines all commom attributes and methods for all classes'''
 
-    def __init__(self):
-        self.id = str(uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    def __init__(self, *args, **kwargs):
+        ''' Initialization of the base model '''
+        if kwargs:
+            # Assign values from kwargs if present, excluding the key __class__
+            for key, value in kwargs.items():
+                if key != '__class__':
+                    if key in ('created_at', 'updated_at'):
+                        # Convert these string dates to datetime objects
+                        value = datetime.fromisoformat(value)
+                    setattr(self, key, value)
+        else:
+            # Assign id and dates if not created from a dictionary
+            self.id = str(uuid4())
+            self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
         '''String representation of the BaseModel'''
