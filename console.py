@@ -4,12 +4,19 @@
 import cmd
 from models.base_model import BaseModel
 from models import storage
+from models.user import User
+from models.state import State
+from models.city import City
+from models.review import Review
+from models.amenity import Amenity
+from models.place import Place
 
 
 class HBNBCommand(cmd.Cmd):
     """User input command for python interpreter"""
     prompt = '(hbnb) '
-    valid_classes = ["BaseModel"]  # Centralized valid classes
+    valid_classes = {"BaseModel": BaseModel, "User": User, "Amenity": Amenity, "City": City, "State": State,
+                   "Place": Place, "Review": Review} 
 
     def _validate_class_name(self, class_name):
         """Validate if the class name exists."""
@@ -36,15 +43,14 @@ class HBNBCommand(cmd.Cmd):
         super().do_help(args)
 
     def do_create(self, args):
-        """Creates a new instance of BaseModel, saves it (to the JSON file) and prints the id."""
-        if not args:
-            print('** class name missing **')
-            return
-        if not self._validate_class_name(args):
-            return
-        new_model = BaseModel()
-        new_model.save()
-        print(new_model.id)
+        """Creates a new instance of a class"""
+        class_name = args.split()[0] if args else ""
+        if class_name in self.valid_classes:
+            new_instance = self.valid_classes[class_name]()
+            new_instance.save()
+            print(new_instance.id)
+        else:
+            print("** class doesn't exist **" if class_name else "** class name missing **")
 
     def do_show(self, args):
         """Prints the string representation of an instance based on class name and id."""
@@ -92,9 +98,47 @@ class HBNBCommand(cmd.Cmd):
         instances = [str(value) for key, value in all_objs.items() if len(arg) == 0 or key.startswith(arg[0])]
         print(instances)
 
-    def default(self, args):
-        """Yell at the user for wrong input commands"""
-        print("Unknown command " + args)
+    def do_update(self, args):
+        """Updates an instance based on the class name and id by adding or updating an attribute."""
+        arg = args.split()
+        if len(arg) == 0:
+            print("** class name missing **")
+            return
+        if len(arg) == 1:
+            print("** instance id missing **")
+            return
+        if len(arg) == 2:
+            print("** attribute name missing **")
+            return
+        if len(arg) == 3:
+            print("** value missing **")
+            return
+        cl_name, ins_id, attr_name, attr_value = arg[:4]
+        if not self._validate_class_name(cl_name):
+            return
+        all_objs = storage.all()
+        obj_key = "{}.{}".format(cl_name, ins_id)
+        if obj_key not in all_objs:
+            print("** no instance found **")
+            return
+        if attr_name in ["id", "created_at", "updated_at"]:
+            return
+        instance = all_objs[obj_key]
+        try:
+            attr_value = eval(attr_value)
+        except Exception as e:
+            pass
+        setattr(instance, attr_name, attr_value)
+        instance.save()
+
+    def default(self, line):
+        """Handle default case when command prefix is not recognized."""
+        if '.' in line and line.endswith('.all()'):
+            class_name = line.split('.')[0]
+            if self._validate_class_name(class_name):
+                self.do_all(class_name)
+        else:
+            print("Unknown command: " + line)    
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()

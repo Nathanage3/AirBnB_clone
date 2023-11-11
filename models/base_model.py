@@ -1,40 +1,52 @@
-#!/usr/bin/python
-''' BaseModel for all classes'''
+#!/usr/bin/python3
+"""
+This module defines the BaseModel class, the base class for all models in the hbnb clone.
+"""
 
 from uuid import uuid4
 from datetime import datetime
+import models
 
-class BaseModel():
-    '''Defines all commom attributes and methods for all classes'''
+
+class BaseModel:
+    """A base class for all hbnb models."""
 
     def __init__(self, *args, **kwargs):
-        ''' Initialization of the base model '''
+        """
+        Instantiates a new BaseModel instance with given attributes.
+        """
         if kwargs:
-            # Assign values from kwargs if present, excluding the key __class__
             for key, value in kwargs.items():
-                if key != '__class__':
-                    if key in ('created_at', 'updated_at'):
-                        # Convert these string dates to datetime objects
-                        value = datetime.fromisoformat(value)
-                    setattr(self, key, value)
+                if key == '__class__':
+                    continue
+                if key in ('created_at', 'updated_at'):
+                    value = datetime.fromisoformat(value)
+                setattr(self, key, value)
         else:
-            # Assign id and dates if not created from a dictionary
             self.id = str(uuid4())
             self.created_at = self.updated_at = datetime.now()
+            models.storage.new(self)
 
     def __str__(self):
-        '''String representation of the BaseModel'''
+        """
+        Returns the string representation of the BaseModel instance.
+        """
         a = self.__class__.__name__
         return "[{}] ({}) {}".format(a, self.id, self.__dict__)
 
     def save(self):
-        '''Update the updated_at with the current time'''
+        """
+        Updates the instance's updated_at timestamp and signals the storage to save it.
+        """
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
-        '''Returns a dictionary containing all keys/values'''
-        dict_rep = self.__dict__.copy()
-        dict_rep['__class__'] = self.__class__.__name__
-        dict_rep['created_at'] = self.created_at.isoformat()
-        dict_rep['updated_at'] = self.updated_at.isoformat()
-        return dict_rep
+        """
+        Returns a dictionary containing all keys/values of the instance.
+        """
+        dictionary = self.__dict__.copy()
+        dictionary['__class__'] = self.__class__.__name__
+        dictionary['created_at'] = self.created_at.isoformat()
+        dictionary['updated_at'] = self.updated_at.isoformat()
+        return dictionary
