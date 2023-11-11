@@ -22,16 +22,18 @@ class BaseModel:
                 if key in ('created_at', 'updated_at'):
                     value = datetime.fromisoformat(value)
                 setattr(self, key, value)
-        else:
+            return
+
             self.id = str(uuid4())
-            self.created_at = self.updated_at = datetime.now()
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
             models.storage.new(self)
 
     def __str__(self):
         """
         Returns the string representation of the BaseModel instance.
         """
-        a = self.__class__.__name__
+        a = type(self).__name__
         return "[{}] ({}) {}".format(a, self.id, self.__dict__)
 
     def save(self):
@@ -45,8 +47,8 @@ class BaseModel:
         """
         Returns a dictionary containing all keys/values of the instance.
         """
-        dictionary = self.__dict__.copy()
-        dictionary['__class__'] = self.__class__.__name__
-        dictionary['created_at'] = self.created_at.isoformat()
-        dictionary['updated_at'] = self.updated_at.isoformat()
+        dictionary = {**self.__dict__}
+        dictionary['__class__'] = type(self).__name__
+        dictionary['created_at'] = dictionary['created_at'].isoformat()
+        dictionary['updated_at'] = dictionary['updated_at'].isoformat()
         return dictionary

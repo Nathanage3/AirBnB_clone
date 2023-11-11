@@ -4,14 +4,15 @@
 import os
 import json
 from models.base_model import BaseModel
-from models.user import User
-from models.state import State
-from models.city import City
 from models.review import Review
 from models.amenity import Amenity
+from models.state import State
+from models.city import City
 from models.place import Place
+from models.user import User
 
-class FileStorage:
+
+class FileStorage():
     """
     FileStorage class that serializes instances to a JSON file and
     deserializes JSON file to instances.
@@ -30,7 +31,7 @@ class FileStorage:
         """
         Sets in __objects the obj with key <obj class name>.id.
         """
-        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+        key = "{}.{}".format(type(obj).__name__, obj.id)
         FileStorage.__objects[key] = obj
 
     def save(self):
@@ -45,14 +46,27 @@ class FileStorage:
         """
         Deserializes the JSON file to __objects if the JSON file (__file_path) exists.
         """
+        new_classes = {'BaseModel': BaseModel, 'User': User,
+                           'Amenity': Amenity, 'City': City, 'State': State,
+                           'Place': Place, 'Review': Review}
+        if not os.path.exists(FileStorage.__file__path):
+            return
+            
+        with open(FileStorage.__file_path, 'r') as f:
+            objects = None
+            
+            try:
+                objects = json.loads(f)
+
+            except Exception as e:
+                pass
+
+            if objects is None:
+                return
+
+            FileStorage.__objects = {
+                k: new_classes[k.split('.')[0]](**v)
+                for k, v in objects.items()
+            }
         
-        try:
-            with open(FileStorage.__file_path, 'r') as f:
-                objects = json.load(f)
-            for key, value in objects.items():
-                class_name = value['__class__']
-                del value['__class__']
-                cls = globals()[class_name]
-                self.new(cls(**value))
-        except FileNotFoundError:
-            pass
+
