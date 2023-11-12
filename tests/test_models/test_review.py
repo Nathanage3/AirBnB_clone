@@ -3,10 +3,12 @@
 Unit tests for the Review class.
 """
 
+import os
 import unittest
 from models.review import Review
-from models.base_model import BaseModel
+from models import storage
 from datetime import datetime
+from models.engine.file_storage import FileStorage
 
 
 class TestReview(unittest.TestCase):

@@ -3,11 +3,12 @@
 Unit tests for the City class.
 """
 
+import os
 import unittest
+from models.engine.file_storage import FileStorage
+from models import storage
 from models.city import City
-from models.base_model import BaseModel
 from datetime import datetime
-
 
 class TestCity(unittest.TestCase):
     """Defines test cases for the City class."""

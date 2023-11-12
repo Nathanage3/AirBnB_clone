@@ -10,16 +10,21 @@ from models.city import City
 from models.review import Review
 from models.amenity import Amenity
 from models.place import Place
+
+
 valid_classes = {"BaseModel": BaseModel, "User": User, "Amenity": Amenity,
                "City": City, "State": State, "Place": Place, "Review": Review} 
 
 class HBNBCommand(cmd.Cmd):
     """User input command for python interpreter"""
     prompt = '(hbnb) '
-    
+
+    valid_classes = {"BaseModel": BaseModel, "User": User, "Amenity": Amenity,
+               "City": City, "State": State, "Place": Place, "Review": Review}
 
     def _validate_class_name(self, class_name):
         """Validate if the class name exists."""
+        
         if class_name not in self.valid_classes:
             print("** class doesn't exist **")
             return False

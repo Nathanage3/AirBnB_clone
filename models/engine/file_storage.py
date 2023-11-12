@@ -12,7 +12,7 @@ from models.place import Place
 from models.user import User
 
 
-class FileStorage():
+class FileStorage:
     """
     FileStorage class that serializes instances to a JSON file and
     deserializes JSON file to instances.
@@ -49,7 +49,7 @@ class FileStorage():
         new_classes = {'BaseModel': BaseModel, 'User': User,
                            'Amenity': Amenity, 'City': City, 'State': State,
                            'Place': Place, 'Review': Review}
-        if not os.path.exists(FileStorage.__file__path):
+        if not os.path.exists(FileStorage.__file_path):
             return
             
         with open(FileStorage.__file_path, 'r') as f:
@@ -59,7 +59,8 @@ class FileStorage():
                 objects = json.loads(f)
 
             except Exception as e:
-                pass
+                print(e)
+                return
 
             if objects is None:
                 return

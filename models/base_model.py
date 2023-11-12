@@ -7,7 +7,7 @@ from uuid import uuid4
 from datetime import datetime
 import models
 
-
+               
 class BaseModel:
     """A base class for all hbnb models."""
 
@@ -23,7 +23,7 @@ class BaseModel:
                     value = datetime.fromisoformat(value)
                 setattr(self, key, value)
             return
-
+        else:
             self.id = str(uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()

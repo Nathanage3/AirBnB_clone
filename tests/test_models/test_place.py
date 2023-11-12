@@ -3,9 +3,11 @@
 Unit tests for the Place class.
 """
 
+import os
 import unittest
+from models.engine.file_storage import FileStorage
 from models.place import Place
-from models.base_model import BaseModel
+from models import storage
 from datetime import datetime
 
 

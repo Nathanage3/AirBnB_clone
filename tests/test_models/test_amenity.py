@@ -3,9 +3,12 @@
 Unit tests for the Amenity class.
 """
 
+import os
 import unittest
-from models.amenity import Amenity
+from models import storage
 from datetime import datetime
+from models.amenity import Amenity
+from models.engine.file_storage import FileStorage
 
 
 class TestAmenity(unittest.TestCase):
