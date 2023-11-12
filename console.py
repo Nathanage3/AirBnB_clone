@@ -24,7 +24,7 @@ class HBNBCommand(cmd.Cmd):
 
     def _validate_class_name(self, class_name):
         """Validate if the class name exists."""
-        
+
         if class_name not in self.valid_classes:
             print("** class doesn't exist **")
             return False
@@ -136,14 +136,81 @@ class HBNBCommand(cmd.Cmd):
         setattr(instance, attr_name, attr_value)
         instance.save()
 
+    def do_count(self, class_name):
+        """Counts the number of instances of a given class."""
+        count = 0
+        for obj in storage.all().values():
+            if obj.__class__.__name__ == class_name:
+                count += 1
+        print(count)
+
+    def do_show_id(self, class_name, obj_id):
+        """Show an instance based on its class name and id."""
+        key = f"{class_name}.{obj_id}"
+        if key in storage.all():
+            print(storage.all()[key])
+        else:
+            print("** no instance found **")
+
+    def do_destroy_id(self, class_name, obj_id):
+        """Destroy an instance based on its class name and id."""
+        key = f"{class_name}.{obj_id}"
+        if key in storage.all():
+            del storage.all()[key]
+            storage.save()  # Assuming you have a method to save changes to storage
+        else:
+            print("** no instance found **")
+
+    def do_update_id_with_dict(self, class_name, obj_id, attr_dict):
+        """Update an instance based on its class name and id with a dictionary."""
+        key = f"{class_name}.{obj_id}"
+        if key in storage.all():
+            obj = storage.all()[key]
+            for attr_name, attr_value in attr_dict.items():
+                if hasattr(obj, attr_name):
+                    setattr(obj, attr_name, attr_value)
+            obj.save()  # Assuming you have a method to save changes to storage
+        else:
+            print("** no instance found **")
+            
     def default(self, line):
         """Handle default case when command prefix is not recognized."""
-        if '.' in line and line.endswith('.all()'):
-            class_name = line.split('.')[0]
+        
+        if '.' in line:
+            parts = line.split('.', 1)  # Split only on the first dot
+            class_name, command = parts[0], parts[1]
+
+        if command.startswith("all()"):
             if self._validate_class_name(class_name):
                 self.do_all(class_name)
+        elif command.startswith("count()"):
+            if self._validate_class_name(class_name):
+                self.do_count(class_name)
+        elif command.startswith("show("):
+            obj_id = command[5:-1].strip('"')
+            if self._validate_class_name(class_name):
+                self.do_show_id(class_name, obj_id)
+        elif command.startswith("destroy("):
+            obj_id = command[8:-1].strip('"')
+            if self._validate_class_name(class_name):
+                self.do_destroy_id(class_name, obj_id)
+        elif command.startswith("update("):
+            try:
+                args = command[7:-1]
+                if args[0] == "{":
+                    attr_dict = json.loads(args)
+                    self.do_update_id_with_dict(class_name, attr_dict)
+                else:
+                    parts = args.split(',', 1)
+                    obj_id = parts[0].strip('" ')
+                    attr_dict = json.loads(parts[1].strip())
+                    self.do_update_id_with_dict(class_name, obj_id, attr_dict)
+            except (json.JSONDecodeError, IndexError):
+                print("** invalid format **")
         else:
-            print("Unknown command: " + line)    
+            print("Unknown command: " + line)
+    
+        
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
