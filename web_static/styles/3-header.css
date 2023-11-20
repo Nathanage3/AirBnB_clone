@@ -1,17 +1,18 @@
+/* Header styles */
 header {
     background-color: white;
     height: 70px;
     width: 100%;
-    border-bottom: 1px #CCCCCC;
-};
+    border-bottom: 1px solid #CCCCCC;
+    display: flex;
+    align-items: center;
+}
 
-#header_logo {
-	height: 100%;
-	width: 142px;
-
-	background-image: url("../images/logo.png");
-	background-repeat: no-repeat;
-	background-position: center;
-
-	margin-left: 20px;
+header .logo {
+    background-image: url('../images/logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 60px; 
+    margin-left: 20px;
 }
