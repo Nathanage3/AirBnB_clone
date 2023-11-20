@@ -1,0 +1,80 @@
+/* Filters styles */
+.filters {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    width: 100%;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
+    padding: 0 30px;
+    box-sizing: border-box;
+}
+
+.filters .locations,
+.filters .amenities {
+    position: relative;
+    width: 25%;
+    text-align: left;
+    border-right: 1px solid #DDDDDD;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.filters .amenities {
+    border-right: none;
+}
+
+.filters .locations:hover .popover,
+.filters .amenities:hover .popover {
+    display: block;
+}
+
+.filters .popover {
+    display: none;
+    position: absolute;
+    background-color: #FAFAFA;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.filters .popover ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.filters .popover h2 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.filters h3 {
+    font-weight: 600;
+    margin: 0;
+}
+
+.filters h4 {
+    font-weight: 400;
+    font-size: 14px;
+    margin: 0;
+}
+
+.filters button {
+    margin-left: auto; /* Pushes the button to the right */
+    background-color: #FF5A5F;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    height: 48px;
+    padding: 0 30px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    font-size: 18px;
+}
+
+.filters button:hover {
+    opacity: 0.9;
+}
